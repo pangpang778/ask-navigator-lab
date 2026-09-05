@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head><meta charset="utf-8"><title>放样:重修与路径进度状态机(throwaway)</title>
+<style>body{font-family:system-ui;margin:24px;max-width:720px;background:#f6f7f9}
+button{margin:4px;padding:8px 12px;border:1px solid #cbd5e0;border-radius:6px;background:#fff;cursor:pointer}
+button:hover{background:#e2e8f0} h3{margin:18px 0 8px} pre{background:#0f172a;color:#a5f3fc;padding:12px;border-radius:8px;font-size:13px}
+.c{display:inline-block;margin:4px;padding:6px 10px;border-radius:6px;background:#fff;border:1px solid #e2e8f0}
+.done{background:#dcfce7;border-color:#22c55e}.active{background:#fef9c3;border-color:#eab308}.ret{border-style:dashed}</style></head>
+<body>
+<h2>设计问题:重修已完成课程时,路径进度怎么变?</h2>
+<p>候选答案已编进纯模块(可点场景见下);船长对状态反应,即成决策。</p>
+<h3>场景</h3>
+<div>
+<button onclick="run('all')">① 全部完成</button>
+<button onclick="run('retake')">② 重修课程2</button>
+<button onclick="run('partial')">③ 重修后只完成1课</button>
+<button onclick="run('again')">④ 重新完成课程2</button>
+<button onclick="run('reset')">↺ 重置</button>
+</div>
+<h3>当前状态(每次点击后完整可见)</h3>
+<div id="cards"></div><pre id="view"></pre>
+<script type="module">
+import { createPathState, reduce, pathProgress } from './retake-core.mjs';
+const ids = ['course-1','course-2','course-3'];
+let state = createPathState(ids);
+const names = {'course-1':'HTML/CSS','course-2':'JavaScript','course-3':'TypeScript'};
+window.run = (k) => {
+  if (k==='all') ids.forEach(id => state = reduce(state,{type:'complete-course',courseId:id}));
+  if (k==='retake') state = reduce(state,{type:'retake-course',courseId:'course-2'});
+  if (k==='partial') state = reduce(state,{type:'complete-lesson',courseId:'course-2'});
+  if (k==='again') state = reduce(state,{type:'complete-course',courseId:'course-2'});
+  if (k==='reset') state = createPathState(ids);
+  render();
+};
+function render(){
+  const p = pathProgress(state);
+  document.getElementById('cards').innerHTML = ids.map(id=>{
+    const c = state.courses[id]; const a = c.attempts[c.attempts.length-1];
+    const cls = a.complete?'done':(p.retaking.includes(id)?'ret active':'active');
+    const tag = a.complete?'✓完成':(a.retake?'↺重修中':'▶进行中');
+    return `<span class="c ${cls}">${names[id]}:${tag}(${c.attempts.length}次尝试)</span>`;
+  }).join('') + `<span class="c">路径:${p.percent}%${p.pathCompletedEarned?' | 🏆徽章已锁定':''}</span>`;
+  document.getElementById('view').textContent = JSON.stringify(p,null,2);
+}
+render();
+</script></body></html>
