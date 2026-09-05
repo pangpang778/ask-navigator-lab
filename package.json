@@ -1,0 +1,6 @@
+{
+  "name": "course-video-manager",
+  "version": "0.3.0",
+  "private": true,
+  "scripts": { "test": "vitest run" }
+}
