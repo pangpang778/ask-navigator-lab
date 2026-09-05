@@ -5,6 +5,11 @@ export interface LessonProgress {
   watchedAt?: string;
 }
 
+// A rewatch appends a second entry for the same lesson: completion must
+// count distinct lesson ids, not raw entries.
 export function isSectionComplete(lessons: LessonProgress[]): boolean {
-  return lessons.length > 0 && lessons.every((l) => l.watched);
+  const allIds = new Set(lessons.map((l) => l.lessonId));
+  if (allIds.size === 0) return false;
+  const watchedIds = new Set(lessons.filter((l) => l.watched).map((l) => l.lessonId));
+  return [...allIds].every((id) => watchedIds.has(id));
 }
