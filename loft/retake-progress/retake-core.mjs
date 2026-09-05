@@ -47,7 +47,7 @@ export function reduce(state, event) {
 // Derived view: path progress counts LATEST attempt completion per course.
 export function pathProgress(state) {
   const cs = Object.entries(state.courses);
-  const done = cs.filter(([, c]) => latestAttempt(c).complete).length;
+  const done = cs.filter(([, c]) => c.attempts.some((a) => a.complete)).length;
   return {
     doneCourses: done,
     totalCourses: cs.length,
