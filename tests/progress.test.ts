@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isSectionComplete, LessonProgress } from '../src/progress.js';
+import { isSectionComplete, LessonProgress } from '../src/progress.ts';
 
 const entry = (lessonId: string, watched: boolean): LessonProgress => ({ lessonId, studentId: 's1', watched });
 
