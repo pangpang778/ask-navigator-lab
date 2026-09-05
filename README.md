@@ -8,3 +8,4 @@ Current features:
 - Student enrollment and progress tracking (watched/unwatched per lesson)
 
 Stack: TypeScript, Express, SQLite, React. No issue tracker configured yet.
+# WIP notes
